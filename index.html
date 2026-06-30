@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>בליץ-מילה - מסך הבית</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #050b24;
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            background: #0b163e;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 26px;
+            font-weight: 900;
+            color: #4cd1c0;
+            letter-spacing: 0.5px;
+        }
+        .user-badge {
+            background: rgba(255,255,255,0.07);
+            padding: 6px 14px;
+            border-radius: 20px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .menu-list {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 10px;
+        }
+        .menu-item {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.1s ease;
+        }
+        .menu-item:active { transform: scale(0.98); }
+        .menu-item h3 { margin: 0; font-size: 22px; font-weight: 800; }
+        .menu-item p { margin: 5px 0 0 0; font-size: 13px; color: #64748b; font-weight: 600; }
+        
+        .item-single { background: linear-gradient(135deg, #f3e8ff, #fbf7ff); color: #7c3aed; }
+        .item-vs { background: linear-gradient(135deg, #fef9c3, #fffbeb); color: #b45309; }
+        .item-group { background: linear-gradient(135deg, #fce7f3, #fff1f2); color: #db2777; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <div class="logo">בליץ-מילה ⚡</div>
+            <div class="user-badge">👤 מתאמן אורח</div>
+        </div>
+
+        <div class="menu-list">
+            <a href="lobby.html" class="menu-item item-single">
+                <h3>אימון קריאה אישי</h3>
+                <p>שיפור מהירות הקריאה וצמצום מרכז הראייה</p>
+            </a>
+            <div class="menu-item item-vs" onclick="location.href='lobby.html'">
+                <h3>אתגר קבוצתי קשוח</h3>
+                <p>תחרות קריאה מהירה מול משתתפים אחרים בכיתה</p>
+            </div>
+            <div class="menu-item item-group" onclick="location.href='lobby.html'">
+                <h3>מרתון משפטים ארוכים</h3>
+                <p>אימון זיכרון חזותי לביטויים מורכבים</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

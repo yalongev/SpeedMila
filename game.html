@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>בליץ-מילה - זירת אימון</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #050b24;
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            color: white;
+        }
+        .game-container {
+            width: 100%;
+            max-width: 480px;
+            background: #0b163e;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        /* בר עליון עם טיימר עגול */
+        .top-status-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .timer-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #1e293b;
+            border: 4px solid #f43f5e; /* צבע טיימר מהצילום מסך */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 800;
+            color: white;
+        }
+        .game-title { font-size: 16px; color: #94a3b8; font-weight: bold; }
+
+        /* קוביית החשיפה הטכיסטוסקופית */
+        .viewport-panel {
+            width: 100%;
+            background: #060b1e;
+            border-radius: 20px;
+            height: 160px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+            border: 1px solid #1e293b;
+        }
+        .flash-text {
+            color: #ffffff;
+            font-weight: 700;
+            display: none;
+            text-align: center;
+        }
+        .info-hint {
+            color: #475569;
+            font-size: 14px;
+        }
+
+        /* כפתור הפעלה מרכזי חלק */
+        .trigger-lever-btn {
+            width: 100%;
+            padding: 15px;
+            background: #3b82f6;
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 25px;
+            transition: opacity 0.2s;
+        }
+        .trigger-lever-btn:disabled { background: #1e293b; color: #475569; cursor: not-allowed; }
+
+        /* גריד תשובות - 2 בשורה בצורת גלולה מלאה (Capsule) */
+        .answers-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .trivo-pill-btn {
+            background: #0f172a;
+            border: 2px solid #1e293b;
+            color: white;
+            padding: 16px 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .trivo-pill-btn:hover:not(:disabled) { border-color: #3b82f6; }
+        
+        /* דעיכת כפתורים חכמה */
+        .trivo-pill-btn.fade-out { opacity: 0.15; pointer-events: none; }
+        .trivo-pill-btn.correct { background: #065f46 !important; border-color: #10b981 !important; }
+        .trivo-pill-btn.wrong { background: #991b1b !important; border-color: #ef4444 !important; }
+
+        /* כפתורי עזר תחתיים מהצילום מסך */
+        .lifelines-row {
+            display: flex;
+            gap: 20px;
+            margin-top: auto;
+            padding-bottom: 10px;
+        }
+        .lifeline-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #1e293b;
+            border: 2px solid #334155;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- בר עליון -->
+        <div class="top-status-bar">
+            <div style="font-size: 14px; color: #e2e8f0;">⚡ קפיץ: <span id="speedText">300</span>ms</div>
+            <div class="timer-circle" id="timerClock">15</div>
+            <div style="font-size: 14px; color: #e2e8f0;">⭐ ניקוד: <span id="scoreText">0</span></div>
+        </div>
+
+        <!-- חלון החשיפה (הטכיסטוסקופ) -->
+        <div class="viewport-panel">
+            <div id="flashText" class="flash-text"></div>
+            <div id="hintLabel" class="info-hint">הקפיץ דרוך. לחץ על כפתור ההפעלה!</div>
+        </div>
+
+        <!-- כפתור הפעלה -->
+        <button id="leverBtn" class="trigger-lever-btn" onclick="fireBlitzFlash()">הפעל הבזק 🕹️</button>
+
+        <!-- כפתורי הגלולה של התשובות (2 בשורה) -->
+        <div class="answers-grid">
+            <button class="trivo-pill-btn" onclick="checkBlitzAnswer(this)" disabled>-</button>
+            <button class="trivo-pill-btn" onclick="checkBlitzAnswer(this)" disabled>-</button>
+            <button class="trivo-pill-btn" onclick="checkBlitzAnswer(this)" disabled>-</button>
+            <button class="trivo-pill-btn" onclick="checkBlitzAnswer(this)" disabled>-</button>
+        </div>
+
+        <!-- כפתורי עזר תחתונים מהעיצוב של טריבו -->
+        <div class="lifelines-row">
+            <div class="lifeline-circle" onclick="alert('גלגל הצלה: זמן נוסף יתווסף בקרוב!')">🕒+</div>
+            <div class="lifeline-circle" onclick="alert('גלגל הצלה: 50:50 יופעל בשלב הבא!')">50:50</div>
+            <div class="lifeline-circle" onclick="location.href='lobby.html'">➡️ דלג</div>
+        </div>
+    </div>
+
+    <script>
+        const nouns = ["הילד", "המורה", "האיש", "החבר", "הספר", "הבית", "הכיתה", "הכלב", "החתול", "המשחק", "הבוקר", "העולם"];
+        const verbs = ["רוצה", "עושה", "הולך", "רץ", "קורא", "כותב", "לומד", "משחק", "רואה", "אוהב", "מדבר", "מבין"];
+        const adjectives = ["טוב", "גדול", "חדש", "יפה", "מהיר", "חכם", "שמח", "קטן", "מעניין", "נחמד"];
+        const adverbs = ["עכשיו", "היום", "מהר", "מאוד", "כאן", "שם", "תמיד", "בכיף", "ביחד", "שוב"];
+
+        let score = 0;
+        let exposureTime = 300; 
+        let correctTarget = "";
+        let countdownVal = 15;
+        let clockInterval = null;
+
+        const flashText = document.getElementById('flashText');
+        const hintLabel = document.getElementById('hintLabel');
+        const leverBtn = document.getElementById('leverBtn');
+        const answerBtns = document.querySelectorAll('.trivo-pill-btn');
+
+        // טעינת ההגדרות מהדף הקודם
+        const wordsLenSetting = parseInt(localStorage.getItem('trivo_wordsLen') || "2");
+        const fontSizeSetting = localStorage.getItem('trivo_fontSize') || "36px";
+        flashText.style.fontSize = fontSizeSetting;
+
+        function createRandomPhrase(len) {
+            let n = () => nouns[Math.floor(Math.random() * nouns.length)];
+            let v = () => verbs[Math.floor(Math.random() * verbs.length)];
+            let j = () => adjectives[Math.floor(Math.random() * adjectives.length)];
+            let d = () => adverbs[Math.floor(Math.random() * adverbs.length)];
+
+            if (len === 1) return n();
+            if (len === 2) return n() + " " + v();
+            if (len === 3) return n() + " " + v() + " " + j();
+            return n() + " " + v() + " " + j() + " " + d();
+        }
+
+        function startCountdownClock() {
+            clearInterval(clockInterval);
+            countdownVal = 15;
+            document.getElementById('timerClock').innerText = countdownVal;
+            
+            clockInterval = setInterval(() => {
+                countdownVal--;
+                document.getElementById('timerClock').innerText = countdownVal;
+                if (countdownVal <= 0) {
+                    clearInterval(clockInterval);
+                    alert('נגמר הזמן לשאלה זו!');
+                    resetRound();
+                }
+            }, 1000);
+        }
+
+        function fireBlitzFlash() {
+            leverBtn.disabled = true;
+            hintLabel.style.display = "none";
+            
+            answerBtns.forEach(b => {
+                b.className = "trivo-pill-btn";
+                b.disabled = true;
+                b.innerText = "-";
+            });
+
+            correctTarget = createRandomPhrase(wordsLenSetting);
+            flashText.innerText = correctTarget;
+
+            setTimeout(() => {
+                // הבזק מדויק ללא השהיות דפדפן
+                flashText.style.display = "block";
+
+                setTimeout(() => {
+                    flashText.style.display = "none";
+                    buildAnswerOptions();
+                    startCountdownClock();
+                }, exposureTime);
+
+            }, 600);
+        }
+
+        function buildAnswerOptions() {
+            let options = [correctTarget];
+            while(options.length < 4) {
+                let d = createRandomPhrase(wordsLenSetting);
+                if(!options.includes(d)) options.push(d);
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            answerBtns.forEach((btn, idx) => {
+                btn.innerText = options[idx];
+                btn.disabled = false;
+            });
+        }
+
+        function checkBlitzAnswer(selectedBtn) {
+            clearInterval(clockInterval);
+            answerBtns.forEach(b => b.disabled = true);
+
+            if (selectedBtn.innerText === correctTarget) {
+                selectedBtn.classList.add('correct');
+                score += 10;
+                document.getElementById('scoreText').innerText = score;
+
+                // העלאת מהירות הקפיץ
+                if(exposureTime > 40) {
+                    exposureTime -= 30;
+                    document.getElementById('speedText').innerText = exposureTime;
+                }
+
+                answerBtns.forEach(b => {
+                    if (b !== selectedBtn) b.classList.add('fade-out');
+                });
+
+                setTimeout(() => {
+                    resetRound();
+                }, 1000);
+            } else {
+                selectedBtn.classList.add('wrong');
+                answerBtns.forEach(b => {
+                    if (b !== selectedBtn && b.innerText !== correctTarget) b.classList.add('fade-out');
+                    if (b.innerText === correctTarget) b.classList.add('correct');
+                });
+
+                setTimeout(() => {
+                    resetRound();
+                }, 1200);
+            }
+        }
+
+        function resetRound() {
+            leverBtn.disabled = false;
+            hintLabel.style.display = "block";
+            answerBtns.forEach(b => {
+                b.className = "trivo-pill-btn";
+                b.innerText = "-";
+                b.disabled = true;
+            });
+        }
+    </script>
+</body>
+</html>

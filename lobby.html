@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>בליץ-מילה - הגדרות שלב</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #050b24;
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .lobby-modal {
+            width: 90%;
+            max-width: 400px;
+            background: #090f26;
+            border: 1px solid #1e293b;
+            border-radius: 24px;
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .circle-badge {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid #1e293b;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px auto;
+        }
+        .circle-badge .title { font-size: 14px; color: #94a3b8; }
+        .circle-badge .num { font-size: 28px; font-weight: 800; color: white; }
+        
+        .info-row {
+            background: #0f172a;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            font-size: 15px;
+            color: #cbd5e1;
+            display: flex;
+            justify-content: space-between;
+        }
+        .info-row span { font-weight: bold; color: #4cd1c0; }
+
+        .settings-box {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 16px;
+            border: 1px dashed #334155;
+            text-align: right;
+        }
+        .settings-box label {
+            display: block;
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            margin-top: 10px;
+        }
+        .settings-box select {
+            width: 100%;
+            padding: 10px;
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .play-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, #f59e0b 0%, #d946ef 50%, #6366f1 100%);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 20px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(217, 70, 239, 0.4);
+            transition: transform 0.1s;
+        }
+        .play-btn:active { transform: scale(0.97); }
+    </style>
+</head>
+<body>
+
+    <div class="lobby-modal">
+        <div class="circle-badge">
+            <span class="title">רמה</span>
+            <span class="num">1</span>
+        </div>
+
+        <div style="font-size: 16px; color: #94a3b8; margin-bottom: 20px;">חוקי אימון המיקוד:</div>
+
+        <div class="info-row">
+            <span>מותר לטעות עד:</span>
+            <span>3 פעמים</span>
+        </div>
+        <div class="info-row">
+            <span>זמן תגובה מקסימלי:</span>
+            <span>15 שניות</span>
+        </div>
+
+        <div class="settings-box">
+            <label>כמות מילים בביטוי המהיר:</label>
+            <select id="wordsLen">
+                <option value="1">מילה בודדת (קל)</option>
+                <option value="2" selected>ביטוי של 2 מילים</option>
+                <option value="3">ביטוי של 3 מילים</option>
+                <option value="4">משפט של 4 מילים</option>
+            </select>
+
+            <label>גודל אותיות ההבזק:</label>
+            <select id="fontSize">
+                <option value="20px">פיצי (Foveal Vision מתקדם)</option>
+                <option value="28px">קטן</option>
+                <option value="36px" selected>בינוני (רגיל)</option>
+                <option value="48px">גדול מאוד</option>
+            </select>
+        </div>
+
+        <button class="play-btn" onclick="startGame()">שחק עכשיו</button>
+    </div>
+
+    <script>
+        function startGame() {
+            localStorage.setItem('trivo_wordsLen', document.getElementById('wordsLen').value);
+            localStorage.setItem('trivo_fontSize', document.getElementById('fontSize').value);
+            location.href = 'game.html';
+        }
+    </script>
+</body>
+</html>
